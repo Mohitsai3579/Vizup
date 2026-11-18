@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>VIZUP — Clickable Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #F8FAFC;
+    --bg-card: #FFFFFF;
+    --border: #E2E8F0;
+    --border-strong: #CBD5E1;
+    --text: #0F172A;
+    --text-2: #475569;
+    --text-muted: #94A3B8;
+    --accent: #4F46E5;
+    --accent-2: #6366F1;
+    --accent-soft: #EEF2FF;
+    --success: #059669;
+    --success-soft: #ECFDF5;
+    --warning: #D97706;
+    --warning-soft: #FEF3C7;
+    --danger: #DC2626;
+}
+* { box-sizing: border-box; }
+html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+}
+.stage {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 30px 20px 60px 20px;
+}
+.stage-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+}
+.brand {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 700; font-size: 16px;
+    color: var(--text);
+}
+.brand .dot {
+    width: 22px; height: 22px;
+    border-radius: 5px;
+    background: linear-gradient(135deg, var(--accent) 0%, #8B5CF6 100%);
+}
+.stage-meta {
+    font-size: 12px; color: var(--text-muted);
+}
+.stage-meta strong { color: var(--text-2); font-weight: 600; }
+
+.screen {
+    display: none;
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(15,23,42,0.08);
+    max-width: 720px;
+    margin: 0 auto;
+}
+.screen.active { display: block; }
+
+.chrome {
+    background: #F1F5F9;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+}
+.chrome .dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+}
+.chrome .dot.r { background: #FCA5A5; }
+.chrome .dot.y { background: #FCD34D; }
+.chrome .dot.g { background: #86EFAC; }
+.chrome .url {
+    margin-left: 14px;
+    font-size: 12px;
+    color: var(--text-muted);
+    background: white;
+    padding: 4px 12px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.body {
+    padding: 24px 28px 28px 28px;
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+}
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+}
+.topbar .brand-name {
+    font-size: 14px; font-weight: 700;
+    color: var(--accent); letter-spacing: 0.04em;
+}
+.topbar .user {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    border: 2px solid var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent); font-size: 12px; font-weight: 700;
+}
+
+.h {
+    font-size: 22px; font-weight: 700;
+    color: var(--text);
+    margin: 0 0 6px 0;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+}
+.sub {
+    font-size: 14px; color: var(--text-2);
+    margin: 0 0 20px 0;
+}
+
+.field { margin-bottom: 16px; }
+.label {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px; font-weight: 600;
+    color: var(--text-2);
+    margin-bottom: 6px;
+}
+.label .req { color: var(--danger); font-weight: 700; font-size: 11px; }
+.label .opt {
+    color: var(--text-muted); font-weight: 500;
+    font-size: 11px;
+    background: var(--bg);
+    padding: 2px 8px; border-radius: 4px;
+    text-transform: uppercase; letter-spacing: 0.04em;
+}
+.input {
+    border: 1.5px solid var(--border-strong);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 14px;
+    color: var(--text);
+    background: white;
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+}
+.input.filled {
+    border-color: var(--accent);
+    background: white;
+}
+.input.placeholder {
+    color: var(--text-muted);
+    background: #FAFBFC;
+    border-style: dashed;
+}
+.input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+textarea.input {
+    min-height: 60px;
+    line-height: 1.5;
+    resize: vertical;
+}
+.hint {
+    font-size: 12px; color: var(--text-muted);
+    margin-top: 4px;
+    font-style: italic;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: inherit;
+    transition: all 0.15s ease;
+}
+.btn.primary {
+    background: var(--accent);
+    color: white;
+}
+.btn.primary:hover {
+    background: #4338CA;
+}
+.btn.secondary {
+    background: white;
+    color: var(--text);
+    border-color: var(--border-strong);
+}
+.btn.secondary:hover {
+    background: var(--bg);
+    border-color: var(--text-muted);
+}
+.btn.ghost {
+    background: transparent;
+    color: var(--accent);
+}
+.btn.ghost:hover {
+    text-decoration: underline;
+}
+.btn.warm {
+    background: var(--warning-soft);
+    color: var(--warning);
+    border-color: #FDE68A;
+}
+.btn.warm:hover {
+    background: #FDE68A;
+}
+
+.btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 18px;
+}
+.btn-row.between { justify-content: space-between; }
+.btn-row.right { justify-content: flex-end; }
+
+.divider {
+    border-top: 1px dashed var(--border);
+    margin: 18px 0;
+}
+.section-h {
+    font-size: 12px; font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin: 6px 0 10px 0;
+}
+
+.tone-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+.chip {
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1.5px solid var(--border-strong);
+    background: white;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.chip:hover { border-color: var(--accent); }
+.chip.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+.chip.warm {
+    background: var(--warning-soft);
+    color: var(--warning);
+    border-color: #FDE68A;
+}
+
+.paste-box {
+    background: #FAFBFC;
+    border: 1.5px dashed var(--border-strong);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 14px;
+    font-style: italic;
+    min-height: 60px;
+}
+
+/* W3 idea cards */
+.idea-list {
+    display: flex; flex-direction: column;
+    gap: 10px;
+}
+.idea-card {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    display: grid;
+    grid-template-columns: 1fr 18px;
+    gap: 10px;
+    align-items: center;
+    background: white;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.idea-card:hover {
+    border-color: var(--accent-2);
+    background: var(--accent-soft);
+}
+.idea-card.selected {
+    border: 2px solid var(--accent);
+    background: var(--accent-soft);
+}
+.idea-card .ic-title {
+    font-size: 14px; font-weight: 700;
+    color: var(--text);
+    margin: 0 0 2px 0;
+}
+.idea-card .ic-desc {
+    font-size: 12.5px;
+    color: var(--text-2);
+    line-height: 1.4;
+    margin: 0;
+}
+.idea-card .ic-radio {
+    width: 18px; height: 18px;
+    border: 2px solid var(--border-strong);
+    border-radius: 50%;
+}
+.idea-card.selected .ic-radio {
+    border-color: var(--accent);
+    background: var(--accent);
+    box-shadow: inset 0 0 0 3px white;
+}
+
+/* W4 generating */
+.gen-state {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    flex: 1;
+    padding: 30px 20px;
+}
+.gen-spinner {
+    width: 50px; height: 50px;
+    border: 4px solid var(--accent-soft);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    margin-bottom: 18px;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.gen-title {
+    font-size: 18px; font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+}
+.gen-sub {
+    font-size: 14px; color: var(--text-2);
+    margin-bottom: 20px;
+    line-height: 1.5;
+    max-width: 360px;
+}
+.gen-steps {
+    width: 100%; max-width: 360px;
+    display: flex; flex-direction: column;
+    gap: 6px;
+    text-align: left;
+}
+.gen-step {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 10px;
+    font-size: 13px;
+    color: var(--text-2);
+    border-radius: 5px;
+}
+.gen-step.done { color: var(--success); }
+.gen-step.done .gs-mark {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--success); color: white;
+    font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+}
+.gen-step.active {
+    background: var(--accent-soft);
+    color: var(--text); font-weight: 600;
+}
+.gen-step.active .gs-mark {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    border-top-color: transparent;
+    animation: spin 0.8s linear infinite;
+}
+.gen-step.pending .gs-mark {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--border-strong);
+}
+
+/* W5 post preview */
+.post-preview {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    display: flex; flex-direction: column;
+    gap: 12px;
+}
+.post-head {
+    display: flex; align-items: center; gap: 10px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+.post-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent) 0%, #8B5CF6 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 13px; font-weight: 700;
+}
+.post-meta .pn { font-size: 14px; font-weight: 700; color: var(--text); }
+.post-meta .ps { font-size: 12px; color: var(--text-muted); }
+.post-copy {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--text);
+}
+.post-copy strong { color: var(--accent); font-weight: 600; }
+.post-tags {
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 500;
+}
+.post-foot {
+    display: flex; gap: 20px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.usefulness-survey {
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: var(--success-soft);
+    border: 1px solid #A7F3D0;
+    border-radius: 6px;
+}
+.usefulness-survey .ws-title {
+    font-size: 11px; font-weight: 700;
+    color: var(--success);
+    letter-spacing: 0.06em; text-transform: uppercase;
+    margin-bottom: 4px;
+}
+.usefulness-survey .ws-q {
+    font-size: 14px;
+    color: var(--text); font-weight: 600;
+    margin-bottom: 8px;
+}
+.usefulness-survey .ws-opts {
+    display: flex; gap: 8px;
+}
+.usefulness-survey .ws-opt {
+    padding: 6px 14px;
+    background: white;
+    border: 1.5px solid #A7F3D0;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.usefulness-survey .ws-opt:hover {
+    background: var(--success);
+    color: white;
+    border-color: var(--success);
+}
+
+/* Saved state */
+.saved-banner {
+    background: var(--success-soft);
+    border: 1.5px solid #A7F3D0;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--success);
+    font-weight: 600;
+}
+
+/* Navigation breadcrumb */
+.breadcrumb {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin: 30px 0 0 0;
+    padding: 14px 0;
+    flex-wrap: wrap;
+}
+.bc-step {
+    padding: 5px 12px;
+    font-size: 11px;
+    color: var(--text-muted);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    cursor: default;
+}
+.bc-step.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+.bc-arrow {
+    color: var(--text-muted);
+    font-size: 12px;
+    display: flex; align-items: center;
+}
+
+.revision-note {
+    margin-top: 16px;
+    padding: 10px 14px;
+    background: #FFFBEB;
+    border: 1px dashed var(--warning);
+    border-radius: 5px;
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.45;
+}
+.revision-note strong { color: var(--warning); font-weight: 700; }
+
+.intro {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.6;
+}
+.intro strong { color: var(--text); }
+.intro .instr {
+    display: flex;
+    gap: 18px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+    font-size: 12px;
+}
+.intro .instr-item {
+    display: flex; align-items: center; gap: 6px;
+}
+.intro .instr-item .arrow {
+    color: var(--accent); font-weight: 700;
+}
+
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+    <div class="stage-header">
+        <div class="brand">
+            <div class="dot"></div>
+            <span>VIZUP — Clickable Prototype</span>
+        </div>
+        <div class="stage-meta">6 connected screens · <strong>click the buttons to walk through</strong></div>
+    </div>
+
+    <div class="intro">
+        <strong>How to test:</strong> click Continue on each screen to advance through the main route. From the result screen (W5), click “Not my brand” to enter the recovery branch (W6), then Regenerate to return to a new result. Click Save or Copy on W5 to reach the activated state.
+        <div class="instr">
+            <div class="instr-item"><span class="arrow">→</span> Continue (W1 → W2 → W3 → W4 → W5)</div>
+            <div class="instr-item"><span class="arrow">→</span> Not my brand (W5 → W6 → W5)</div>
+            <div class="instr-item"><span class="arrow">→</span> Save / Copy (W5 → Activated)</div>
+        </div>
+    </div>
+
+    <!-- ============ W1 — Business setup ============ -->
+    <div class="screen active" id="w1">
+        <div class="chrome">
+            <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+            <div class="url">vizup.app/onboarding/business</div>
+        </div>
+        <div class="body">
+            <div class="topbar">
+                <div class="brand-name">VIZUP</div>
+                <div class="user">A</div>
+            </div>
+            <div class="h">Tell us about your business</div>
+            <div class="sub">Two lines. We’ll draft your first post from these.</div>
+
+            <div class="field">
+                <div class="label">Business name <span class="req">Required</span></div>
+                <input class="input filled" type="text" value="Bramble & Crumb" />
+            </div>
+
+            <div class="field">
+                <div class="label">One-line description <span class="req">Required</span></div>
+                <textarea class="input filled">Sourdough bakery &amp; weekend brunch spot in Bandra, Mumbai.</textarea>
+                <div class="hint">e.g. “Yoga studio for busy professionals in Indiranagar.”</div>
+            </div>
+
+            <div class="btn-row right">
+                <button class="btn primary" onclick="show('w2')">Continue →</button>
+            </div>
+
+            <div class="revision-note">
+                <strong>Revision after walkthrough:</strong> Removed “Skip to AI” button — a participant misread it as the primary CTA and clicked it without filling required fields (see walkthrough in PDF, p.8). Continue is now the only action on W1.
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ W2 — Optional brand details ============ -->
+    <div class="screen" id="w2">
+        <div class="chrome">
+            <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+            <div class="url">vizup.app/onboarding/brand</div>
+        </div>
+        <div class="body">
+            <div class="topbar">
+                <div class="brand-name">VIZUP</div>
+                <div class="user">A</div>
+            </div>
+            <div class="h">Make it sound like you</div>
+            <div class="sub">Optional — you can do this later from Settings.</div>
+
+            <div class="section-h">Tone of voice</div>
+            <div class="tone-chips" id="w2-chips">
+                <div class="chip active" data-tone="Warm">Warm</div>
+                <div class="chip" data-tone="Casual">Casual</div>
+                <div class="chip" data-tone="Professional">Professional</div>
+                <div class="chip" data-tone="Playful">Playful</div>
+            </div>
+
+            <div class="section-h">Sample post (optional)</div>
+            <textarea class="input placeholder" placeholder="Paste a post that “sounds like you” and we’ll learn from it…"></textarea>
+
+            <div class="field" style="margin-top:14px">
+                <div class="label">Website URL <span class="opt">Skippable</span></div>
+                <input class="input placeholder" type="text" placeholder="bramblecrumb.in" />
+            </div>
+
+            <div class="btn-row between">
+                <button class="btn ghost" onclick="show('w3')">Skip for now</button>
+                <button class="btn primary" onclick="show('w3')">Continue →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ W3 — Choose a post idea ============ -->
+    <div class="screen" id="w3">
+        <div class="chrome">
+            <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+            <div class="url">vizup.app/new-post/ideas</div>
+        </div>
+        <div class="body">
+            <div class="topbar">
+                <div class="brand-name">VIZUP</div>
+                <div class="user">A</div>
+            </div>
+            <div class="h">What should we post about?</div>
+            <div class="sub">Three ideas based on “Sourdough bakery &amp; weekend brunch in Bandra.”</div>
+
+            <div class="section-h">Suggested for you</div>
+            <div class="idea-list" id="w3-ideas">
+                <div class="idea-card selected">
+                    <div>
+                        <div class="ic-title">Weekend special announcement</div>
+                        <div class="ic-desc">Spotlight this Saturday’s sourdough flavour + pre-order deadline.</div>
+                    </div>
+                    <div class="ic-radio"></div>
+                </div>
+                <div class="idea-card">
+                    <div>
+                        <div class="ic-title">Behind-the-scenes: bake day</div>
+                        <div class="ic-desc">Show the 4 a.m. dough prep — builds trust, suits Instagram.</div>
+                    </div>
+                    <div class="ic-radio"></div>
+                </div>
+                <div class="idea-card">
+                    <div>
+                        <div class="ic-title">Customer shout-out</div>
+                        <div class="ic-desc">Repost a regular’s photo (with permission) + thank-you line.</div>
+                    </div>
+                    <div class="ic-radio"></div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+            <div style="font-size:13px; color:var(--text-2); margin-bottom:10px;">
+                <strong style="color:var(--text)">Or write your own.</strong> Don’t see what you need?
+            </div>
+            <input class="input placeholder" type="text" placeholder="e.g. Announce our Diwali hamper pre-orders…" />
+
+            <div class="btn-row right">
+                <button class="btn primary" onclick="show('w4')">Generate post →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ W4 — Generating state ============ -->
+    <div class="screen" id="w4">
+        <div class="chrome">
+            <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+            <div class="url">vizup.app/new-post/generating</div>
+        </div>
+        <div class="body">
+            <div class="topbar">
+                <div class="brand-name">VIZUP</div>
+                <div class="user">A</div>
+            </div>
+
+            <div class="gen-state">
+                <div class="gen-spinner"></div>
+                <div class="gen-title">Drafting your post…</div>
+                <div class="gen-sub">Matching Bramble &amp; Crumb’s brand voice with the weekend-special idea.</div>
+
+                <div class="gen-steps">
+                    <div class="gen-step done">
+                        <div class="gs-mark">✓</div>
+                        <span>Read your business description</span>
+                    </div>
+                    <div class="gen-step done">
+                        <div class="gs-mark">✓</div>
+                        <span>Picked a post angle: weekend special</span>
+                    </div>
+                    <div class="gen-step active">
+                        <div class="gs-mark"></div>
+                        <span>Writing in your brand voice…</span>
+                    </div>
+                    <div class="gen-step pending">
+                        <div class="gs-mark"></div>
+                        <span>Adding hashtags &amp; a call to action</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="font-size:12px; color:var(--text-muted); text-align:center; padding-top:14px;">
+                Usually takes 4–7 seconds. <a href="#" onclick="show('w5'); return false;" style="color:var(--accent); font-weight:600">Skip to result →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ W5 — First generated result ============ -->
+    <div class="screen" id="w5">
+        <div class="chrome">
+            <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+            <div class="url">vizup.app/post/preview</div>
+        </div>
+        <div class="body">
+            <div class="topbar">
+                <div class="brand-name">VIZUP</div>
+                <div class="user">A</div>
+            </div>
+            <div class="h">Your first post — ready to go.</div>
+            <div class="sub">Edit inline, save it, or copy to Instagram.</div>
+
+            <div class="post-preview">
+                <div class="post-head">
+                    <div class="post-avatar">B&amp;C</div>
+                    <div class="post-meta">
+                        <div class="pn">Bramble &amp; Crumb</div>
+                        <div class="ps">@bramblecrumb · just now</div>
+                    </div>
+                </div>
+                <div class="post-copy">
+                    Saturday morning just got better. <strong>This week’s loaf is rosemary &amp; sea salt sourdough</strong> — baked at 4 a.m., on the counter by 8. Pre-order by Thursday for pickup at our Bandra shop.
+                </div>
+                <div class="post-tags">#BandraBakery #SourdoughMumbai #WeekendSpecial</div>
+                <div class="post-foot">
+                    <span>♡ 0</span><span>↻ 0</span><span>↗ 0</span>
+                </div>
+            </div>
+
+            <div class="btn-row between" style="margin-top:14px">
+                <div style="display:flex; gap:8px">
+                    <button class="btn secondary">Edit</button>
+                    <button class="btn warm" onclick="show('w6')">Not my brand</button>
+                </div>
+                <div style="display:flex; gap:8px">
+                    <button class="btn secondary" onclick="show('w5-saved')">Copy</button>
+                    <button class="btn primary" onclick="show('w5-saved')">Save post</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ W5-saved — Activated state ============ -->
+    <div class="screen" id="w5-saved">
+        <div class="chrome">
+            <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+            <div class="url">vizup.app/post/preview</div>
+        </div>
+        <div class="body">
+            <div class="topbar">
+                <div class="brand-name">VIZUP</div>
+                <div class="user">A</div>
+            </div>
+
+            <div class="saved-banner">
+                <span style="font-size:18px">✓</span>
+                <span>Post saved. Activation event fired.</span>
+            </div>
+
+            <div class="h">Your first post — saved.</div>
+            <div class="sub">You can find it in your library, or copy it to Instagram now.</div>
+
+            <div class="post-preview">
+                <div class="post-head">
+                    <div class="post-avatar">B&amp;C</div>
+                    <div class="post-meta">
+                        <div class="pn">Bramble &amp; Crumb</div>
+                        <div class="ps">@bramblecrumb · just now</div>
+                    </div>
+                </div>
+                <div class="post-copy">
+                    Saturday morning just got better. <strong>This week’s loaf is rosemary &amp; sea salt sourdough</strong> — baked at 4 a.m., on the counter by 8. Pre-order by Thursday for pickup at our Bandra shop.
+                </div>
+                <div class="post-tags">#BandraBakery #SourdoughMumbai #WeekendSpecial</div>
+            </div>
+
+            <div class="usefulness-survey">
+                <div class="ws-title">Usefulness check · one quick question</div>
+                <div class="ws-q">Would you actually publish this post for your business?</div>
+                <div class="ws-opts">
+                    <div class="ws-opt">Yes — as-is</div>
+                    <div class="ws-opt">Needs minor edits</div>
+                    <div class="ws-opt">No — start over</div>
+                </div>
+            </div>
+
+            <div class="btn-row between">
+                <button class="btn ghost" onclick="show('w1')">Start over</button>
+                <button class="btn secondary" onclick="alert('Thanks! That completes the prototype walkthrough.')">Submit feedback</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ W6 — Recovery ============ -->
+    <div class="screen" id="w6">
+        <div class="chrome">
+            <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+            <div class="url">vizup.app/post/tone-adjust</div>
+        </div>
+        <div class="body">
+            <div class="topbar">
+                <div class="brand-name">VIZUP</div>
+                <div class="user">A</div>
+            </div>
+            <div class="h">Let’s make it sound more like you.</div>
+            <div class="sub">Pick a tone, paste a sample, or both. Then we’ll regenerate.</div>
+
+            <div class="section-h">Quick tone shift</div>
+            <div class="tone-chips" id="w6-chips">
+                <div class="chip">Friendlier</div>
+                <div class="chip active">More casual</div>
+                <div class="chip">More formal</div>
+                <div class="chip warm">Shorter</div>
+                <div class="chip">More emoji</div>
+                <div class="chip">Less emoji</div>
+            </div>
+
+            <div class="section-h">Or show me a post that sounds like you</div>
+            <textarea class="input placeholder" placeholder="Paste a post that sounds like you and we’ll parse voice from it…">“Hey Bandra — Saturday morning, the kitchen smells like rosemary and sea salt. Stop by for a loaf, or pre-order by Thursday…”</textarea>
+
+            <div class="divider"></div>
+            <div style="font-size:13px; color:var(--text-2); margin-bottom:8px;">
+                <strong style="color:var(--text)">What changed?</strong> Tone: warm → casual. Sample pasted.
+            </div>
+
+            <div class="btn-row between">
+                <button class="btn ghost" onclick="show('w5')">Cancel</button>
+                <button class="btn primary" onclick="show('w4')">Regenerate post →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ Breadcrumb ============ -->
+    <div class="breadcrumb" id="breadcrumb">
+        <div class="bc-step" data-screen="w1">W1 Setup</div>
+        <div class="bc-arrow">→</div>
+        <div class="bc-step" data-screen="w2">W2 Brand</div>
+        <div class="bc-arrow">→</div>
+        <div class="bc-step" data-screen="w3">W3 Ideas</div>
+        <div class="bc-arrow">→</div>
+        <div class="bc-step" data-screen="w4">W4 Gen</div>
+        <div class="bc-arrow">→</div>
+        <div class="bc-step" data-screen="w5">W5 Result</div>
+        <div class="bc-arrow">→</div>
+        <div class="bc-step" data-screen="w6">W6 Recovery</div>
+        <div class="bc-arrow">→</div>
+        <div class="bc-step" data-screen="w5-saved">✓ Saved</div>
+    </div>
+
+</div>
+
+<script>
+function show(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const target = document.getElementById(id);
+    if (target) target.classList.add('active');
+    // Update breadcrumb
+    document.querySelectorAll('.bc-step').forEach(b => b.classList.remove('active'));
+    const bc = document.querySelector('.bc-step[data-screen="' + id + '"]');
+    if (bc) bc.classList.add('active');
+    // Scroll to top of stage
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Tone chip selection (single-select within a group)
+document.querySelectorAll('#w2-chips .chip, #w6-chips .chip').forEach(chip => {
+    chip.addEventListener('click', function() {
+        const parent = this.parentElement;
+        parent.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+    });
+});
+
+// Idea card selection
+document.querySelectorAll('#w3-ideas .idea-card').forEach(card => {
+    card.addEventListener('click', function() {
+        document.querySelectorAll('#w3-ideas .idea-card').forEach(c => c.classList.remove('selected'));
+        this.classList.add('selected');
+    });
+});
+
+// Breadcrumb clickable
+document.querySelectorAll('.bc-step').forEach(b => {
+    b.addEventListener('click', function() {
+        const target = this.getAttribute('data-screen');
+        if (target) show(target);
+    });
+    b.style.cursor = 'pointer';
+});
+</script>
+
+</body>
+</html>
