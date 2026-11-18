@@ -1,958 +1,307 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>VIZUP — Clickable Prototype</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vizup: clickable prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root {
-    --bg: #F8FAFC;
-    --bg-card: #FFFFFF;
-    --border: #E2E8F0;
-    --border-strong: #CBD5E1;
-    --text: #0F172A;
-    --text-2: #475569;
-    --text-muted: #94A3B8;
-    --accent: #4F46E5;
-    --accent-2: #6366F1;
-    --accent-soft: #EEF2FF;
-    --success: #059669;
-    --success-soft: #ECFDF5;
-    --warning: #D97706;
-    --warning-soft: #FEF3C7;
-    --danger: #DC2626;
-}
-* { box-sizing: border-box; }
-html, body {
-    margin: 0; padding: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', -apple-system, sans-serif;
-    font-size: 14px;
-    line-height: 1.5;
-    min-height: 100vh;
-}
-.stage {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 30px 20px 60px 20px;
-}
-.stage-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 24px;
-}
-.brand {
-    display: flex; align-items: center; gap: 10px;
-    font-weight: 700; font-size: 16px;
-    color: var(--text);
-}
-.brand .dot {
-    width: 22px; height: 22px;
-    border-radius: 5px;
-    background: linear-gradient(135deg, var(--accent) 0%, #8B5CF6 100%);
-}
-.stage-meta {
-    font-size: 12px; color: var(--text-muted);
-}
-.stage-meta strong { color: var(--text-2); font-weight: 600; }
-
-.screen {
-    display: none;
-    background: var(--bg-card);
-    border: 1px solid var(--border-strong);
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(15,23,42,0.08);
-    max-width: 720px;
-    margin: 0 auto;
-}
-.screen.active { display: block; }
-
-.chrome {
-    background: #F1F5F9;
-    padding: 10px 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    border-bottom: 1px solid var(--border);
-}
-.chrome .dot {
-    width: 12px; height: 12px;
-    border-radius: 50%;
-}
-.chrome .dot.r { background: #FCA5A5; }
-.chrome .dot.y { background: #FCD34D; }
-.chrome .dot.g { background: #86EFAC; }
-.chrome .url {
-    margin-left: 14px;
-    font-size: 12px;
-    color: var(--text-muted);
-    background: white;
-    padding: 4px 12px;
-    border-radius: 5px;
-    border: 1px solid var(--border);
-    font-family: 'JetBrains Mono', monospace;
-}
-
-.body {
-    padding: 24px 28px 28px 28px;
-    min-height: 420px;
-    display: flex;
-    flex-direction: column;
-}
-.topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 18px;
-    padding-bottom: 14px;
-    border-bottom: 1px solid var(--border);
-}
-.topbar .brand-name {
-    font-size: 14px; font-weight: 700;
-    color: var(--accent); letter-spacing: 0.04em;
-}
-.topbar .user {
-    width: 30px; height: 30px;
-    border-radius: 50%;
-    background: var(--accent-soft);
-    border: 2px solid var(--accent);
-    display: flex; align-items: center; justify-content: center;
-    color: var(--accent); font-size: 12px; font-weight: 700;
-}
-
-.h {
-    font-size: 22px; font-weight: 700;
-    color: var(--text);
-    margin: 0 0 6px 0;
-    line-height: 1.25;
-    letter-spacing: -0.01em;
-}
-.sub {
-    font-size: 14px; color: var(--text-2);
-    margin: 0 0 20px 0;
-}
-
-.field { margin-bottom: 16px; }
-.label {
-    display: flex; justify-content: space-between; align-items: center;
-    font-size: 13px; font-weight: 600;
-    color: var(--text-2);
-    margin-bottom: 6px;
-}
-.label .req { color: var(--danger); font-weight: 700; font-size: 11px; }
-.label .opt {
-    color: var(--text-muted); font-weight: 500;
-    font-size: 11px;
-    background: var(--bg);
-    padding: 2px 8px; border-radius: 4px;
-    text-transform: uppercase; letter-spacing: 0.04em;
-}
-.input {
-    border: 1.5px solid var(--border-strong);
-    border-radius: 6px;
-    padding: 10px 14px;
-    font-size: 14px;
-    color: var(--text);
-    background: white;
-    width: 100%;
-    font-family: 'Inter', sans-serif;
-}
-.input.filled {
-    border-color: var(--accent);
-    background: white;
-}
-.input.placeholder {
-    color: var(--text-muted);
-    background: #FAFBFC;
-    border-style: dashed;
-}
-.input:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-soft);
-}
-textarea.input {
-    min-height: 60px;
-    line-height: 1.5;
-    resize: vertical;
-}
-.hint {
-    font-size: 12px; color: var(--text-muted);
-    margin-top: 4px;
-    font-style: italic;
-}
-
-.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 600;
-    border: 1.5px solid transparent;
-    cursor: pointer;
-    text-decoration: none;
-    font-family: inherit;
-    transition: all 0.15s ease;
-}
-.btn.primary {
-    background: var(--accent);
-    color: white;
-}
-.btn.primary:hover {
-    background: #4338CA;
-}
-.btn.secondary {
-    background: white;
-    color: var(--text);
-    border-color: var(--border-strong);
-}
-.btn.secondary:hover {
-    background: var(--bg);
-    border-color: var(--text-muted);
-}
-.btn.ghost {
-    background: transparent;
-    color: var(--accent);
-}
-.btn.ghost:hover {
-    text-decoration: underline;
-}
-.btn.warm {
-    background: var(--warning-soft);
-    color: var(--warning);
-    border-color: #FDE68A;
-}
-.btn.warm:hover {
-    background: #FDE68A;
-}
-
-.btn-row {
-    display: flex;
-    gap: 10px;
-    margin-top: auto;
-    padding-top: 18px;
-}
-.btn-row.between { justify-content: space-between; }
-.btn-row.right { justify-content: flex-end; }
-
-.divider {
-    border-top: 1px dashed var(--border);
-    margin: 18px 0;
-}
-.section-h {
-    font-size: 12px; font-weight: 700;
-    color: var(--text-muted);
-    letter-spacing: 0.1em; text-transform: uppercase;
-    margin: 6px 0 10px 0;
-}
-
-.tone-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 16px;
-}
-.chip {
-    padding: 7px 14px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 500;
-    border: 1.5px solid var(--border-strong);
-    background: white;
-    color: var(--text-2);
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-.chip:hover { border-color: var(--accent); }
-.chip.active {
-    background: var(--accent);
-    color: white;
-    border-color: var(--accent);
-}
-.chip.warm {
-    background: var(--warning-soft);
-    color: var(--warning);
-    border-color: #FDE68A;
-}
-
-.paste-box {
-    background: #FAFBFC;
-    border: 1.5px dashed var(--border-strong);
-    border-radius: 6px;
-    padding: 10px 14px;
-    font-size: 13px;
-    color: var(--text-muted);
-    line-height: 1.5;
-    margin-bottom: 14px;
-    font-style: italic;
-    min-height: 60px;
-}
-
-/* W3 idea cards */
-.idea-list {
-    display: flex; flex-direction: column;
-    gap: 10px;
-}
-.idea-card {
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 14px;
-    display: grid;
-    grid-template-columns: 1fr 18px;
-    gap: 10px;
-    align-items: center;
-    background: white;
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-.idea-card:hover {
-    border-color: var(--accent-2);
-    background: var(--accent-soft);
-}
-.idea-card.selected {
-    border: 2px solid var(--accent);
-    background: var(--accent-soft);
-}
-.idea-card .ic-title {
-    font-size: 14px; font-weight: 700;
-    color: var(--text);
-    margin: 0 0 2px 0;
-}
-.idea-card .ic-desc {
-    font-size: 12.5px;
-    color: var(--text-2);
-    line-height: 1.4;
-    margin: 0;
-}
-.idea-card .ic-radio {
-    width: 18px; height: 18px;
-    border: 2px solid var(--border-strong);
-    border-radius: 50%;
-}
-.idea-card.selected .ic-radio {
-    border-color: var(--accent);
-    background: var(--accent);
-    box-shadow: inset 0 0 0 3px white;
-}
-
-/* W4 generating */
-.gen-state {
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    text-align: center;
-    flex: 1;
-    padding: 30px 20px;
-}
-.gen-spinner {
-    width: 50px; height: 50px;
-    border: 4px solid var(--accent-soft);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    margin-bottom: 18px;
-    animation: spin 1s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.gen-title {
-    font-size: 18px; font-weight: 700;
-    color: var(--text);
-    margin-bottom: 6px;
-}
-.gen-sub {
-    font-size: 14px; color: var(--text-2);
-    margin-bottom: 20px;
-    line-height: 1.5;
-    max-width: 360px;
-}
-.gen-steps {
-    width: 100%; max-width: 360px;
-    display: flex; flex-direction: column;
-    gap: 6px;
-    text-align: left;
-}
-.gen-step {
-    display: flex; align-items: center; gap: 10px;
-    padding: 7px 10px;
-    font-size: 13px;
-    color: var(--text-2);
-    border-radius: 5px;
-}
-.gen-step.done { color: var(--success); }
-.gen-step.done .gs-mark {
-    width: 16px; height: 16px;
-    border-radius: 50%;
-    background: var(--success); color: white;
-    font-size: 10px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-}
-.gen-step.active {
-    background: var(--accent-soft);
-    color: var(--text); font-weight: 600;
-}
-.gen-step.active .gs-mark {
-    width: 16px; height: 16px;
-    border-radius: 50%;
-    border: 2px solid var(--accent);
-    border-top-color: transparent;
-    animation: spin 0.8s linear infinite;
-}
-.gen-step.pending .gs-mark {
-    width: 16px; height: 16px;
-    border-radius: 50%;
-    border: 2px solid var(--border-strong);
-}
-
-/* W5 post preview */
-.post-preview {
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 16px;
-    display: flex; flex-direction: column;
-    gap: 12px;
-}
-.post-head {
-    display: flex; align-items: center; gap: 10px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--border);
-}
-.post-avatar {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent) 0%, #8B5CF6 100%);
-    display: flex; align-items: center; justify-content: center;
-    color: white; font-size: 13px; font-weight: 700;
-}
-.post-meta .pn { font-size: 14px; font-weight: 700; color: var(--text); }
-.post-meta .ps { font-size: 12px; color: var(--text-muted); }
-.post-copy {
-    font-size: 15px;
-    line-height: 1.55;
-    color: var(--text);
-}
-.post-copy strong { color: var(--accent); font-weight: 600; }
-.post-tags {
-    font-size: 13px;
-    color: var(--accent);
-    font-weight: 500;
-}
-.post-foot {
-    display: flex; gap: 20px;
-    padding-top: 12px;
-    border-top: 1px solid var(--border);
-    font-size: 13px;
-    color: var(--text-muted);
-}
-
-.usefulness-survey {
-    margin-top: 16px;
-    padding: 12px 16px;
-    background: var(--success-soft);
-    border: 1px solid #A7F3D0;
-    border-radius: 6px;
-}
-.usefulness-survey .ws-title {
-    font-size: 11px; font-weight: 700;
-    color: var(--success);
-    letter-spacing: 0.06em; text-transform: uppercase;
-    margin-bottom: 4px;
-}
-.usefulness-survey .ws-q {
-    font-size: 14px;
-    color: var(--text); font-weight: 600;
-    margin-bottom: 8px;
-}
-.usefulness-survey .ws-opts {
-    display: flex; gap: 8px;
-}
-.usefulness-survey .ws-opt {
-    padding: 6px 14px;
-    background: white;
-    border: 1.5px solid #A7F3D0;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-2);
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-.usefulness-survey .ws-opt:hover {
-    background: var(--success);
-    color: white;
-    border-color: var(--success);
-}
-
-/* Saved state */
-.saved-banner {
-    background: var(--success-soft);
-    border: 1.5px solid #A7F3D0;
-    border-radius: 6px;
-    padding: 12px 16px;
-    margin-bottom: 18px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 14px;
-    color: var(--success);
-    font-weight: 600;
-}
-
-/* Navigation breadcrumb */
-.breadcrumb {
-    display: flex;
-    justify-content: center;
-    gap: 14px;
-    margin: 30px 0 0 0;
-    padding: 14px 0;
-    flex-wrap: wrap;
-}
-.bc-step {
-    padding: 5px 12px;
-    font-size: 11px;
-    color: var(--text-muted);
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    cursor: default;
-}
-.bc-step.active {
-    background: var(--accent);
-    color: white;
-    border-color: var(--accent);
-}
-.bc-arrow {
-    color: var(--text-muted);
-    font-size: 12px;
-    display: flex; align-items: center;
-}
-
-.revision-note {
-    margin-top: 16px;
-    padding: 10px 14px;
-    background: #FFFBEB;
-    border: 1px dashed var(--warning);
-    border-radius: 5px;
-    font-size: 12px;
-    color: var(--text-2);
-    line-height: 1.45;
-}
-.revision-note strong { color: var(--warning); font-weight: 700; }
-
-.intro {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 16px 20px;
-    margin-bottom: 24px;
-    font-size: 13px;
-    color: var(--text-2);
-    line-height: 1.6;
-}
-.intro strong { color: var(--text); }
-.intro .instr {
-    display: flex;
-    gap: 18px;
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px dashed var(--border);
-    font-size: 12px;
-}
-.intro .instr-item {
-    display: flex; align-items: center; gap: 6px;
-}
-.intro .instr-item .arrow {
-    color: var(--accent); font-weight: 700;
-}
-
+:root{--ink:#111827;--mut:#5b6475;--line:#e3e6ee;--bg:#f4f5f9;--card:#fff;--acc:#3a36d8;--acc2:#ecebff;--warm:#b45309;--warm2:#fff4dc;--ok:#0f8a5f;--ok2:#e4f6ee;--bad:#c2331f}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font:15px/1.5 "Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg)}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid #8b88ff;outline-offset:2px}
+header{display:flex;align-items:center;gap:14px;padding:12px 24px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.logo{font-weight:700;font-size:18px;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+.logo i{width:22px;height:22px;border-radius:7px;background:var(--acc);display:inline-block}
+.pill{font-size:12.5px;color:var(--mut);border:1px solid var(--line);border-radius:99px;padding:3px 11px}
+.sp{flex:1}
+.tg{border:1px solid var(--line);background:#fff;border-radius:9px;padding:6px 12px;font-size:13px;font-weight:500;cursor:pointer}
+.tg[aria-pressed=true]{background:var(--acc2);border-color:#c9c6ff;color:var(--acc)}
+.app{display:grid;grid-template-columns:210px minmax(0,1fr) 290px;gap:24px;max-width:1380px;margin:0 auto;padding:24px}
+.app.noev{grid-template-columns:210px minmax(0,1fr)}.app.noev .ev{display:none}
+.rail{position:sticky;top:78px;align-self:start}
+.rail h2,.ev h2{font-size:13px;font-weight:600;color:var(--mut);margin:0 0 12px}
+.st{display:flex;gap:11px;padding:8px 0;color:var(--mut);font-size:14px;position:relative}
+.st:not(:last-child)::after{content:"";position:absolute;left:11px;top:34px;bottom:-8px;width:2px;background:var(--line)}
+.st b{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);background:#fff;display:grid;place-items:center;font-size:12px;flex:none;z-index:1}
+.st small{display:block;font-size:12px;color:#8a92a3}
+.st.on{color:var(--ink);font-weight:600}.st.on b{border-color:var(--acc);color:var(--acc)}
+.st.done b{background:var(--acc);border-color:var(--acc);color:#fff}.st.done::after{background:var(--acc)}
+.frame{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 40px -18px rgba(20,24,60,.28);overflow:hidden}
+.bar{display:flex;align-items:center;gap:6px;padding:10px 14px;background:#eef0f6;border-bottom:1px solid var(--line)}
+.bar i{width:10px;height:10px;border-radius:50%;background:#ccd1de}
+.bar span{margin-left:10px;background:#fff;border-radius:7px;padding:3px 12px;font-size:12.5px;color:var(--mut);flex:1;max-width:420px}
+.top{display:flex;justify-content:space-between;align-items:center;padding:14px 32px;border-bottom:1px solid var(--line)}
+.av{width:30px;height:30px;border-radius:50%;background:var(--acc2);color:var(--acc);display:grid;place-items:center;font-weight:600;font-size:13px}
+.s{display:none;padding:30px 36px 34px;max-width:680px;margin:0 auto}
+.s.on{display:block;animation:in .25s ease}
+@keyframes in{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+h1{font-size:26px;line-height:1.2;letter-spacing:-.02em;margin:0 0 6px}
+.sub{color:var(--mut);margin:0 0 22px}
+label{display:flex;justify-content:space-between;font-weight:600;font-size:14px;margin:16px 0 6px}
+.req{font-weight:500;font-size:12.5px;color:var(--bad)}.opt{font-weight:500;font-size:12.5px;color:#8a92a3}
+input[type=text],textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px 13px;background:#fff;transition:border-color .15s,box-shadow .15s}
+textarea{min-height:76px;resize:vertical}
+input:focus,textarea:focus{outline:0;border-color:var(--acc);box-shadow:0 0 0 4px var(--acc2)}
+.hint{font-size:12.5px;color:#8a92a3;margin-top:6px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:26px}
+.btn{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:10px 20px;font-weight:600;cursor:pointer;transition:transform .1s,background .15s}
+.btn:hover:not(:disabled){background:#f7f8fb}.btn:active:not(:disabled){transform:scale(.98)}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}.btn.p:hover:not(:disabled){background:#2f2bc0}
+.btn.w{background:var(--warm2);border-color:#f2d9a0;color:var(--warm)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.lk{background:none;border:0;color:var(--acc);font-weight:600;cursor:pointer;padding:6px 2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:6px 14px;font-size:14px;cursor:pointer;transition:.15s}
+.chip:hover{border-color:#b9b7f5}.chip[aria-pressed=true]{background:var(--acc);border-color:var(--acc);color:#fff}
+.sec{font-weight:600;font-size:14px;margin:22px 0 10px}
+.idea{display:flex;gap:14px;align-items:flex-start;width:100%;text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:.15s}
+.idea:hover{border-color:#b9b7f5}
+.idea[aria-pressed=true]{border-color:var(--acc);background:var(--acc2)}
+.idea i{width:18px;height:18px;border-radius:50%;border:2px solid #c3c8d6;flex:none;margin-top:3px;background:#fff}
+.idea[aria-pressed=true] i{border:5px solid var(--acc)}
+.idea b{display:block}.idea span{font-size:13.5px;color:var(--mut)}
+.gl{list-style:none;padding:0;margin:26px 0}
+.gl li{padding:9px 0 9px 32px;position:relative;color:#9aa1b1;transition:color .2s}
+.gl li::before{content:"";position:absolute;left:2px;top:12px;width:16px;height:16px;border-radius:50%;border:2px solid var(--line)}
+.gl li.r{color:var(--ink);font-weight:600}
+.gl li.r::before{border-color:var(--acc);border-top-color:transparent;animation:sp .7s linear infinite}
+.gl li.d{color:var(--ok)}.gl li.d::before{background:var(--ok);border-color:var(--ok)}
+@keyframes sp{to{transform:rotate(360deg)}}
+.pg{height:6px;background:var(--line);border-radius:9px;overflow:hidden}.pg div{height:100%;width:0;background:var(--acc);transition:width .6s ease}
+.post{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:#fff;box-shadow:0 6px 20px -12px rgba(20,24,60,.3)}
+.ph{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+.pa{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#f5a524,#e0561a);color:#fff;display:grid;place-items:center;font-weight:700;font-size:12px}
+.ph small{display:block;color:#8a92a3;font-size:12.5px}
+.pt{outline:0;border-radius:6px;min-height:70px}.pt:focus{background:#fafaff;box-shadow:0 0 0 3px var(--acc2)}
+.tags{color:var(--acc);font-size:14px;margin-top:8px}
+.pf{display:flex;gap:18px;color:#8a92a3;font-size:13px;border-top:1px solid var(--line);margin-top:12px;padding-top:10px}
+.act{display:flex;justify-content:space-between;gap:10px;margin-top:16px;flex-wrap:wrap}.act div{display:flex;gap:8px}
+.ver{display:none;background:var(--warm2);color:var(--warm);border-radius:8px;padding:6px 11px;font-size:13px;font-weight:500;margin-bottom:12px}
+.ban{display:flex;gap:10px;align-items:center;background:var(--ok2);color:var(--ok);font-weight:600;border-radius:10px;padding:10px 14px;margin-bottom:18px}
+.sv{border:1.5px solid #c8eadb;background:#f6fcf9;border-radius:12px;padding:16px;margin-top:18px}
+.sv .o{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.sv .chip[aria-pressed=true]{background:var(--ok);border-color:var(--ok)}
+.note{display:none;gap:10px;background:#fffbea;border:1px solid #f3e2a3;border-radius:10px;padding:10px 13px;font-size:13px;margin-bottom:18px;color:#5b4a0a}
+.note b{flex:none;width:22px;height:22px;border-radius:50%;background:#e8b100;color:#fff;display:grid;place-items:center;font-size:12px}
+.ann .note{display:flex}
+.ev{position:sticky;top:78px;align-self:start;background:#111827;color:#e8eaf2;border-radius:16px;padding:18px}
+.ev h2{color:#9aa3b8}
+.m{background:#1d2638;border-radius:10px;padding:10px 12px;font-size:13px;margin-bottom:12px;display:flex;justify-content:space-between}
+.m b{color:#8f8cff}.m.ok b{color:#4ade9a}
+.lg{max-height:380px;overflow:auto;font-size:12.5px}
+.lg div{padding:8px 0;border-bottom:1px solid #232d42}
+.lg code{color:#fff;font-weight:600;font-size:12.5px}.lg em{font-style:normal;color:#8f8cff;margin-left:6px;font-size:11.5px}.lg span{color:#8791a8;display:block}
+.lg p{color:#8791a8;margin:0}
+.foot{color:var(--mut);font-size:13px;text-align:center;margin:16px 0 0}
+.toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,20px);background:#111827;color:#fff;padding:10px 18px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:9}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media(max-width:700px){header{position:static;flex-wrap:wrap;padding:12px 16px}.pill{display:none}.sp{display:none}.tg{flex:1;padding:8px}.app{padding:14px}.rail h2{display:none}.rail{gap:10px}.st{white-space:nowrap;font-size:13px}.top{padding:12px 20px}h1{font-size:23px}.row{flex-wrap:wrap}}
+@media(max-width:1100px){.app{grid-template-columns:1fr}.rail{position:static;display:flex;gap:14px;overflow:auto}.st:not(:last-child)::after{display:none}.st small{display:none}.ev{position:static}.s{padding:24px 20px}}
 </style>
 </head>
 <body>
+<header>
+  <div class="logo"><i></i>Vizup</div>
+  <span class="pill">Clickable prototype · desktop web</span>
+  <span class="sp"></span>
+  <button class="tg" id="tn" aria-pressed="true">Design notes</button>
+  <button class="tg" id="te" aria-pressed="true">Analytics events</button>
+  <button class="tg" id="rs">Restart demo</button>
+</header>
 
-<div class="stage">
+<div class="app ann" id="app">
+  <nav class="rail" aria-label="Onboarding progress">
+    <h2>First session</h2>
+    <div class="st" data-n="1"><b>1</b><div>Your business<small>Required</small></div></div>
+    <div class="st" data-n="2"><b>2</b><div>Brand voice<small>Optional</small></div></div>
+    <div class="st" data-n="3"><b>3</b><div>Post idea<small>Pick one</small></div></div>
+    <div class="st" data-n="4"><b>4</b><div>Drafting<small>About 5 seconds</small></div></div>
+    <div class="st" data-n="5"><b>5</b><div>Review and save<small>First useful post</small></div></div>
+  </nav>
 
-    <div class="stage-header">
-        <div class="brand">
-            <div class="dot"></div>
-            <span>VIZUP — Clickable Prototype</span>
+  <main>
+    <div class="frame">
+      <div class="bar"><i></i><i></i><i></i><span id="url"></span></div>
+      <div class="top"><div class="logo"><i></i>Vizup</div><div class="av">A</div></div>
+
+      <section class="s on" id="w1">
+        <div class="note"><b>1</b><div><strong>Two required fields only.</strong> Evidence: “Setup feels long”, and 40 of 100 users leave at setup. Trade-off: less personalisation up front, recovered on the result screen.</div></div>
+        <h1>Tell us about your business</h1>
+        <p class="sub">Two lines. We’ll draft your first post from these.</p>
+        <label for="name">Business name <span class="req">Required</span></label>
+        <input type="text" id="name" placeholder="e.g. Bramble &amp; Crumb" autocomplete="off">
+        <label for="desc">One-line description <span class="req">Required</span></label>
+        <textarea id="desc" placeholder="e.g. Yoga studio for busy professionals in Indiranagar."></textarea>
+        <div class="hint">Takes about 30 seconds. Everything else is optional.</div>
+        <div class="row"><button class="lk" id="ex">Fill in an example</button><button class="btn p" id="c1" disabled>Continue</button></div>
+      </section>
+
+      <section class="s" id="w2">
+        <h1>Make it sound like you</h1>
+        <p class="sub">Optional. You can add this later in Settings.</p>
+        <div class="sec" style="margin-top:0">Tone of voice</div>
+        <div class="chips" id="tc"></div>
+        <label for="smp">Sample post <span class="opt">Optional</span></label>
+        <textarea id="smp" placeholder="Paste a post that sounds like you and we’ll learn from it."></textarea>
+        <label for="url2">Website <span class="opt">Optional</span></label>
+        <input type="text" id="url2" placeholder="https://yourbusiness.in">
+        <div class="row"><button class="btn" id="sk">Skip for now</button><button class="btn p" id="c2">Continue</button></div>
+      </section>
+
+      <section class="s" id="w3">
+        <div class="note"><b>2</b><div><strong>Suggested ideas instead of a blank prompt box.</strong> Evidence: “What should I ask the AI?” Assumption: a blank prompt is a cold-start barrier for non-marketers (untested). Trade-off: ideas can feel generic.</div></div>
+        <h1>What should we post about?</h1>
+        <p class="sub" id="w3s"></p>
+        <div id="ideas"></div>
+        <label for="cust">Or write your own <span class="opt">Optional</span></label>
+        <input type="text" id="cust" placeholder="e.g. Announce our Diwali hamper pre-orders">
+        <div class="row"><button class="btn" data-go="w2">Back</button><button class="btn p" id="c3">Generate post</button></div>
+      </section>
+
+      <section class="s" id="w4">
+        <h1>Drafting your post</h1>
+        <p class="sub" id="w4s"></p>
+        <div class="pg"><div id="bar"></div></div>
+        <ul class="gl" id="gl"></ul>
+        <div class="hint">Usually takes 4 to 7 seconds. <button class="lk" id="skp">Skip ahead (prototype shortcut)</button></div>
+      </section>
+
+      <section class="s" id="w5">
+        <div class="note"><b>3</b><div><strong>“Not my brand” sits beside Save.</strong> Evidence: “This does not sound like my brand”, and 57% of generators don’t save. Trade-off: tone chips are coarse, so power users are out of scope for session one.</div></div>
+        <h1>Your first post is ready</h1>
+        <p class="sub">Edit it in place, save it, or copy it to Instagram.</p>
+        <div class="ver" id="ver"></div>
+        <div class="post">
+          <div class="ph"><div class="pa">BC</div><div><strong class="bn">Your business</strong><small><span class="hd">@yourbusiness</span> · just now</small></div></div>
+          <div class="pt" id="pt" contenteditable="true" spellcheck="false" aria-label="Post text, editable"></div>
+          <div class="tags">#BandraBakery #SourdoughMumbai #WeekendSpecial</div>
+          <div class="pf"><span>♡ 0</span><span>↻ 0</span><span>↗ 0</span></div>
         </div>
-        <div class="stage-meta">6 connected screens · <strong>click the buttons to walk through</strong></div>
+        <div class="act">
+          <div><button class="btn" id="ed">Edit</button><button class="btn w" data-go="w6">Not my brand</button></div>
+          <div><button class="btn" data-fin="copied">Copy</button><button class="btn p" data-fin="saved">Save post</button></div>
+        </div>
+      </section>
+
+      <section class="s" id="w6">
+        <h1>Let’s make it sound more like you</h1>
+        <p class="sub">Pick a tone, paste a sample, or both. We’ll rewrite the post without asking you to start over.</p>
+        <div class="sec" style="margin-top:0">Quick tone shift</div>
+        <div class="chips" id="rc"></div>
+        <label for="rsm">A post that sounds like you <span class="opt">Optional</span></label>
+        <textarea id="rsm" placeholder="Paste one of your own posts. We’ll match its voice."></textarea>
+        <div class="hint" id="chg"></div>
+        <div class="row"><button class="btn" data-go="w5">Cancel</button><button class="btn p" id="rg">Regenerate post</button></div>
+      </section>
+
+      <section class="s" id="sv">
+        <div class="ban"><span>✓</span><span id="sbt">Post saved</span></div>
+        <h1>Your first post is done</h1>
+        <p class="sub">You can find it in your library, or copy it to Instagram now.</p>
+        <div class="post">
+          <div class="ph"><div class="pa">BC</div><div><strong class="bn">Your business</strong><small><span class="hd">@yourbusiness</span> · just now</small></div></div>
+          <div class="pt" id="pt2" style="min-height:0"></div>
+          <div class="tags">#BandraBakery #SourdoughMumbai #WeekendSpecial</div>
+        </div>
+        <div class="sv" id="svq">
+          <strong>Would you actually publish this post for your business?</strong>
+          <div class="o" id="so"></div>
+          <div class="hint" id="thx" style="display:none">Thanks. This tells us whether the post was good, not just kept.</div>
+        </div>
+        <div class="row"><button class="btn" data-go="w3">Create another post</button><button class="btn p" data-fin="copied">Copy again</button></div>
+      </section>
     </div>
+    <p class="foot">Prototype for the Vizup product intern assignment. All content is sample data. Nothing is sent anywhere.</p>
+  </main>
 
-    <div class="intro">
-        <strong>How to test:</strong> click Continue on each screen to advance through the main route. From the result screen (W5), click “Not my brand” to enter the recovery branch (W6), then Regenerate to return to a new result. Click Save or Copy on W5 to reach the activated state.
-        <div class="instr">
-            <div class="instr-item"><span class="arrow">→</span> Continue (W1 → W2 → W3 → W4 → W5)</div>
-            <div class="instr-item"><span class="arrow">→</span> Not my brand (W5 → W6 → W5)</div>
-            <div class="instr-item"><span class="arrow">→</span> Save / Copy (W5 → Activated)</div>
-        </div>
-    </div>
-
-    <!-- ============ W1 — Business setup ============ -->
-    <div class="screen active" id="w1">
-        <div class="chrome">
-            <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
-            <div class="url">vizup.app/onboarding/business</div>
-        </div>
-        <div class="body">
-            <div class="topbar">
-                <div class="brand-name">VIZUP</div>
-                <div class="user">A</div>
-            </div>
-            <div class="h">Tell us about your business</div>
-            <div class="sub">Two lines. We’ll draft your first post from these.</div>
-
-            <div class="field">
-                <div class="label">Business name <span class="req">Required</span></div>
-                <input class="input filled" type="text" value="Bramble & Crumb" />
-            </div>
-
-            <div class="field">
-                <div class="label">One-line description <span class="req">Required</span></div>
-                <textarea class="input filled">Sourdough bakery &amp; weekend brunch spot in Bandra, Mumbai.</textarea>
-                <div class="hint">e.g. “Yoga studio for busy professionals in Indiranagar.”</div>
-            </div>
-
-            <div class="btn-row right">
-                <button class="btn primary" onclick="show('w2')">Continue →</button>
-            </div>
-
-            <div class="revision-note">
-                <strong>Revision after walkthrough:</strong> Removed “Skip to AI” button — a participant misread it as the primary CTA and clicked it without filling required fields (see walkthrough in PDF, p.8). Continue is now the only action on W1.
-            </div>
-        </div>
-    </div>
-
-    <!-- ============ W2 — Optional brand details ============ -->
-    <div class="screen" id="w2">
-        <div class="chrome">
-            <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
-            <div class="url">vizup.app/onboarding/brand</div>
-        </div>
-        <div class="body">
-            <div class="topbar">
-                <div class="brand-name">VIZUP</div>
-                <div class="user">A</div>
-            </div>
-            <div class="h">Make it sound like you</div>
-            <div class="sub">Optional — you can do this later from Settings.</div>
-
-            <div class="section-h">Tone of voice</div>
-            <div class="tone-chips" id="w2-chips">
-                <div class="chip active" data-tone="Warm">Warm</div>
-                <div class="chip" data-tone="Casual">Casual</div>
-                <div class="chip" data-tone="Professional">Professional</div>
-                <div class="chip" data-tone="Playful">Playful</div>
-            </div>
-
-            <div class="section-h">Sample post (optional)</div>
-            <textarea class="input placeholder" placeholder="Paste a post that “sounds like you” and we’ll learn from it…"></textarea>
-
-            <div class="field" style="margin-top:14px">
-                <div class="label">Website URL <span class="opt">Skippable</span></div>
-                <input class="input placeholder" type="text" placeholder="bramblecrumb.in" />
-            </div>
-
-            <div class="btn-row between">
-                <button class="btn ghost" onclick="show('w3')">Skip for now</button>
-                <button class="btn primary" onclick="show('w3')">Continue →</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ============ W3 — Choose a post idea ============ -->
-    <div class="screen" id="w3">
-        <div class="chrome">
-            <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
-            <div class="url">vizup.app/new-post/ideas</div>
-        </div>
-        <div class="body">
-            <div class="topbar">
-                <div class="brand-name">VIZUP</div>
-                <div class="user">A</div>
-            </div>
-            <div class="h">What should we post about?</div>
-            <div class="sub">Three ideas based on “Sourdough bakery &amp; weekend brunch in Bandra.”</div>
-
-            <div class="section-h">Suggested for you</div>
-            <div class="idea-list" id="w3-ideas">
-                <div class="idea-card selected">
-                    <div>
-                        <div class="ic-title">Weekend special announcement</div>
-                        <div class="ic-desc">Spotlight this Saturday’s sourdough flavour + pre-order deadline.</div>
-                    </div>
-                    <div class="ic-radio"></div>
-                </div>
-                <div class="idea-card">
-                    <div>
-                        <div class="ic-title">Behind-the-scenes: bake day</div>
-                        <div class="ic-desc">Show the 4 a.m. dough prep — builds trust, suits Instagram.</div>
-                    </div>
-                    <div class="ic-radio"></div>
-                </div>
-                <div class="idea-card">
-                    <div>
-                        <div class="ic-title">Customer shout-out</div>
-                        <div class="ic-desc">Repost a regular’s photo (with permission) + thank-you line.</div>
-                    </div>
-                    <div class="ic-radio"></div>
-                </div>
-            </div>
-
-            <div class="divider"></div>
-            <div style="font-size:13px; color:var(--text-2); margin-bottom:10px;">
-                <strong style="color:var(--text)">Or write your own.</strong> Don’t see what you need?
-            </div>
-            <input class="input placeholder" type="text" placeholder="e.g. Announce our Diwali hamper pre-orders…" />
-
-            <div class="btn-row right">
-                <button class="btn primary" onclick="show('w4')">Generate post →</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ============ W4 — Generating state ============ -->
-    <div class="screen" id="w4">
-        <div class="chrome">
-            <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
-            <div class="url">vizup.app/new-post/generating</div>
-        </div>
-        <div class="body">
-            <div class="topbar">
-                <div class="brand-name">VIZUP</div>
-                <div class="user">A</div>
-            </div>
-
-            <div class="gen-state">
-                <div class="gen-spinner"></div>
-                <div class="gen-title">Drafting your post…</div>
-                <div class="gen-sub">Matching Bramble &amp; Crumb’s brand voice with the weekend-special idea.</div>
-
-                <div class="gen-steps">
-                    <div class="gen-step done">
-                        <div class="gs-mark">✓</div>
-                        <span>Read your business description</span>
-                    </div>
-                    <div class="gen-step done">
-                        <div class="gs-mark">✓</div>
-                        <span>Picked a post angle: weekend special</span>
-                    </div>
-                    <div class="gen-step active">
-                        <div class="gs-mark"></div>
-                        <span>Writing in your brand voice…</span>
-                    </div>
-                    <div class="gen-step pending">
-                        <div class="gs-mark"></div>
-                        <span>Adding hashtags &amp; a call to action</span>
-                    </div>
-                </div>
-            </div>
-
-            <div style="font-size:12px; color:var(--text-muted); text-align:center; padding-top:14px;">
-                Usually takes 4–7 seconds. <a href="#" onclick="show('w5'); return false;" style="color:var(--accent); font-weight:600">Skip to result →</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- ============ W5 — First generated result ============ -->
-    <div class="screen" id="w5">
-        <div class="chrome">
-            <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
-            <div class="url">vizup.app/post/preview</div>
-        </div>
-        <div class="body">
-            <div class="topbar">
-                <div class="brand-name">VIZUP</div>
-                <div class="user">A</div>
-            </div>
-            <div class="h">Your first post — ready to go.</div>
-            <div class="sub">Edit inline, save it, or copy to Instagram.</div>
-
-            <div class="post-preview">
-                <div class="post-head">
-                    <div class="post-avatar">B&amp;C</div>
-                    <div class="post-meta">
-                        <div class="pn">Bramble &amp; Crumb</div>
-                        <div class="ps">@bramblecrumb · just now</div>
-                    </div>
-                </div>
-                <div class="post-copy">
-                    Saturday morning just got better. <strong>This week’s loaf is rosemary &amp; sea salt sourdough</strong> — baked at 4 a.m., on the counter by 8. Pre-order by Thursday for pickup at our Bandra shop.
-                </div>
-                <div class="post-tags">#BandraBakery #SourdoughMumbai #WeekendSpecial</div>
-                <div class="post-foot">
-                    <span>♡ 0</span><span>↻ 0</span><span>↗ 0</span>
-                </div>
-            </div>
-
-            <div class="btn-row between" style="margin-top:14px">
-                <div style="display:flex; gap:8px">
-                    <button class="btn secondary">Edit</button>
-                    <button class="btn warm" onclick="show('w6')">Not my brand</button>
-                </div>
-                <div style="display:flex; gap:8px">
-                    <button class="btn secondary" onclick="show('w5-saved')">Copy</button>
-                    <button class="btn primary" onclick="show('w5-saved')">Save post</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ============ W5-saved — Activated state ============ -->
-    <div class="screen" id="w5-saved">
-        <div class="chrome">
-            <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
-            <div class="url">vizup.app/post/preview</div>
-        </div>
-        <div class="body">
-            <div class="topbar">
-                <div class="brand-name">VIZUP</div>
-                <div class="user">A</div>
-            </div>
-
-            <div class="saved-banner">
-                <span style="font-size:18px">✓</span>
-                <span>Post saved. Activation event fired.</span>
-            </div>
-
-            <div class="h">Your first post — saved.</div>
-            <div class="sub">You can find it in your library, or copy it to Instagram now.</div>
-
-            <div class="post-preview">
-                <div class="post-head">
-                    <div class="post-avatar">B&amp;C</div>
-                    <div class="post-meta">
-                        <div class="pn">Bramble &amp; Crumb</div>
-                        <div class="ps">@bramblecrumb · just now</div>
-                    </div>
-                </div>
-                <div class="post-copy">
-                    Saturday morning just got better. <strong>This week’s loaf is rosemary &amp; sea salt sourdough</strong> — baked at 4 a.m., on the counter by 8. Pre-order by Thursday for pickup at our Bandra shop.
-                </div>
-                <div class="post-tags">#BandraBakery #SourdoughMumbai #WeekendSpecial</div>
-            </div>
-
-            <div class="usefulness-survey">
-                <div class="ws-title">Usefulness check · one quick question</div>
-                <div class="ws-q">Would you actually publish this post for your business?</div>
-                <div class="ws-opts">
-                    <div class="ws-opt">Yes — as-is</div>
-                    <div class="ws-opt">Needs minor edits</div>
-                    <div class="ws-opt">No — start over</div>
-                </div>
-            </div>
-
-            <div class="btn-row between">
-                <button class="btn ghost" onclick="show('w1')">Start over</button>
-                <button class="btn secondary" onclick="alert('Thanks! That completes the prototype walkthrough.')">Submit feedback</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ============ W6 — Recovery ============ -->
-    <div class="screen" id="w6">
-        <div class="chrome">
-            <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
-            <div class="url">vizup.app/post/tone-adjust</div>
-        </div>
-        <div class="body">
-            <div class="topbar">
-                <div class="brand-name">VIZUP</div>
-                <div class="user">A</div>
-            </div>
-            <div class="h">Let’s make it sound more like you.</div>
-            <div class="sub">Pick a tone, paste a sample, or both. Then we’ll regenerate.</div>
-
-            <div class="section-h">Quick tone shift</div>
-            <div class="tone-chips" id="w6-chips">
-                <div class="chip">Friendlier</div>
-                <div class="chip active">More casual</div>
-                <div class="chip">More formal</div>
-                <div class="chip warm">Shorter</div>
-                <div class="chip">More emoji</div>
-                <div class="chip">Less emoji</div>
-            </div>
-
-            <div class="section-h">Or show me a post that sounds like you</div>
-            <textarea class="input placeholder" placeholder="Paste a post that sounds like you and we’ll parse voice from it…">“Hey Bandra — Saturday morning, the kitchen smells like rosemary and sea salt. Stop by for a loaf, or pre-order by Thursday…”</textarea>
-
-            <div class="divider"></div>
-            <div style="font-size:13px; color:var(--text-2); margin-bottom:8px;">
-                <strong style="color:var(--text)">What changed?</strong> Tone: warm → casual. Sample pasted.
-            </div>
-
-            <div class="btn-row between">
-                <button class="btn ghost" onclick="show('w5')">Cancel</button>
-                <button class="btn primary" onclick="show('w4')">Regenerate post →</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ============ Breadcrumb ============ -->
-    <div class="breadcrumb" id="breadcrumb">
-        <div class="bc-step" data-screen="w1">W1 Setup</div>
-        <div class="bc-arrow">→</div>
-        <div class="bc-step" data-screen="w2">W2 Brand</div>
-        <div class="bc-arrow">→</div>
-        <div class="bc-step" data-screen="w3">W3 Ideas</div>
-        <div class="bc-arrow">→</div>
-        <div class="bc-step" data-screen="w4">W4 Gen</div>
-        <div class="bc-arrow">→</div>
-        <div class="bc-step" data-screen="w5">W5 Result</div>
-        <div class="bc-arrow">→</div>
-        <div class="bc-step" data-screen="w6">W6 Recovery</div>
-        <div class="bc-arrow">→</div>
-        <div class="bc-step" data-screen="w5-saved">✓ Saved</div>
-    </div>
-
+  <aside class="ev" aria-label="Analytics events">
+    <h2>What we’d measure</h2>
+    <div class="m" id="am"><span>Activated this session</span><b>No</b></div>
+    <div class="lg" id="lg"><p>Events appear here as you click through. Key events are tagged.</p></div>
+  </aside>
 </div>
+<div class="toast" id="toast" role="status"></div>
 
 <script>
-function show(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    const target = document.getElementById(id);
-    if (target) target.classList.add('active');
-    // Update breadcrumb
-    document.querySelectorAll('.bc-step').forEach(b => b.classList.remove('active'));
-    const bc = document.querySelector('.bc-step[data-screen="' + id + '"]');
-    if (bc) bc.classList.add('active');
-    // Scroll to top of stage
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// Tone chip selection (single-select within a group)
-document.querySelectorAll('#w2-chips .chip, #w6-chips .chip').forEach(chip => {
-    chip.addEventListener('click', function() {
-        const parent = this.parentElement;
-        parent.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-        this.classList.add('active');
-    });
-});
-
-// Idea card selection
-document.querySelectorAll('#w3-ideas .idea-card').forEach(card => {
-    card.addEventListener('click', function() {
-        document.querySelectorAll('#w3-ideas .idea-card').forEach(c => c.classList.remove('selected'));
-        this.classList.add('selected');
-    });
-});
-
-// Breadcrumb clickable
-document.querySelectorAll('.bc-step').forEach(b => {
-    b.addEventListener('click', function() {
-        const target = this.getAttribute('data-screen');
-        if (target) show(target);
-    });
-    b.style.cursor = 'pointer';
-});
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const TONES=['Warm','Casual','Professional','Playful'],MAP={Warm:'Friendlier',Casual:'More casual',Professional:'More formal',Playful:'More emoji'};
+const RC=['Friendlier','More casual','More formal','Shorter','More emoji','Less emoji'];
+const IDEAS=[['Weekend special announcement','Spotlight this Saturday’s sourdough flavour and the pre-order deadline.','Weekend special'],
+['Behind the scenes: bake day','Show the 4 a.m. dough prep. It builds trust and suits Instagram.','Bake day'],
+['Customer shout-out','Repost a regular’s photo (with permission) and add a thank-you line.','Shout-out']];
+const POST=[['Saturday morning just got better.','This week’s loaf is rosemary & sea salt sourdough, baked at 4 a.m. and on the counter by 8.','Pre-order by Thursday for pickup at our Bandra shop.'],
+['It’s 4 a.m. and the dough is already rising.','Here’s a peek at bake day: shaping, scoring and the first loaves out of the oven.','Come taste the result this weekend.'],
+['A big thank-you to our regulars.','You turn Saturday mornings into a ritual, and your photos make our week.','Tag us for a chance to be featured.']];
+const URLS={w1:'onboarding/business',w2:'onboarding/brand',w3:'new-post/ideas',w4:'new-post/generating',w5:'post/preview',w6:'post/tone-adjust',sv:'post/saved'};
+const STEP={w1:1,w2:2,w3:3,w4:4,w5:5,w6:5,sv:6};
+const S={tone:null,idea:0,tones:new Set(['More casual']),regen:false,act:false,gen:false,t0:Date.now()};
+let T;
+function chips(el,list,sel,multi,cb){el.innerHTML='';list.forEach(t=>{const b=document.createElement('button');b.className='chip';b.textContent=t;b.setAttribute('aria-pressed',sel(t));b.onclick=()=>{cb(t);$$('#'+el.id+' .chip').forEach(c=>c.setAttribute('aria-pressed',sel(c.textContent)))};el.appendChild(b)})}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),1800)}
+function log(n,d,key){if(!S.first){$('#lg').innerHTML='';S.first=1}
+ const s=Math.round((Date.now()-S.t0)/1000),e=document.createElement('div');
+ e.innerHTML='<code>'+n+'</code>'+(key?'<em>key event</em>':'')+'<span>'+(d||'')+' · '+s+'s in</span>';$('#lg').prepend(e)}
+function go(id){clearTimeout(T);$$('.s').forEach(x=>x.classList.toggle('on',x.id===id));$('#url').textContent='vizup.app/'+URLS[id];
+ const n=STEP[id];$$('.st').forEach(s=>{const k=+s.dataset.n;s.classList.toggle('on',k===n);s.classList.toggle('done',k<n)});
+ if(id==='w3')$('#w3s').textContent='Three ideas based on “'+desc()+'”';
+ if(id==='w4')gen();if(id==='w5')render();
+ if(id==='w6')chg();window.scrollTo({top:0,behavior:'smooth'})}
+const nm=()=>$('#name').value.trim()||'Your business',desc=()=>$('#desc').value.trim();
+function mods(){return S.regen?S.tones:new Set(S.tone?[MAP[S.tone]]:[])}
+function build(){const c=$('#cust').value.trim(),m=mods(),b=S.idea<0?[c||'Fresh from the oven.','Here’s what’s new at '+nm()+' this week.','Message us to find out more.']:POST[S.idea].slice();
+ let [h,body,cta]=b;
+ if(m.has('More formal'))h='We’re delighted to share: '+h.charAt(0).toLowerCase()+h.slice(1);
+ if(m.has('More casual'))h='Hey friends 👋 '+h;
+ if(m.has('Friendlier'))cta+=' We’d love to see you!';
+ if(m.has('More emoji'))cta+=' 🥖✨';
+ let out=m.has('Shorter')?[h,cta]:[h,body,cta];let t=out.join(' ');
+ if(m.has('Less emoji'))t=t.replace(/\p{Extended_Pictographic}\uFE0F?/gu,'').replace(/\s{2,}/g,' ');
+ return t}
+function render(){$('#pt').textContent=S.edited&&!S.regen2?$('#pt').textContent:build();S.regen2=false;$$('.bn').forEach(e=>e.textContent=nm());$$('.hd').forEach(e=>e.textContent='@'+nm().toLowerCase().replace(/[^a-z0-9]/g,''));
+ const v=$('#ver');v.style.display=S.regen?'block':'none';v.textContent='Version 2 · '+[...S.tones].join(', ').toLowerCase()+(S.sample?' · matched to your sample':'');
+ if(!S.gen){S.gen=1;log('post_generated','first draft rendered',1)}}
+function gen(){const m=mods(),L=['Read your business description','Picked a post angle: '+(S.idea<0?'your own idea':IDEAS[S.idea][2]),
+ S.regen?'Applying '+[...S.tones].join(' and ').toLowerCase():(S.tone?'Writing in your '+S.tone.toLowerCase()+' voice':'Writing in a friendly, default voice'),'Adding hashtags and a call to action'];
+ $('#w4s').textContent=S.regen?'Rewriting with your changes. No need to re-enter anything.':'Matching '+nm()+' to the idea you picked.';
+ $('#gl').innerHTML=L.map(x=>'<li>'+x+'</li>').join('');const li=$$('#gl li');$('#bar').style.transition='none';$('#bar').style.width='0';
+ requestAnimationFrame(()=>{$('#bar').style.transition='';let i=0;(function n(){if(i>0)li[i-1].className='d';
+ if(i<li.length){li[i].className='r';$('#bar').style.width=(i+1)*25+'%';i++;T=setTimeout(n,800)}else T=setTimeout(()=>go('w5'),350)})()})}
+function chg(){const a=[...S.tones],sm=$('#rsm').value.trim();S.sample=!!sm;
+ $('#chg').innerHTML='<strong>What changes:</strong> '+(a.length?a.join(', ').toLowerCase():'no tone changes yet')+(sm?'. Your sample will guide the voice.':'.');
+ $('#rg').disabled=!a.length&&!sm}
+function fin(mode){$$('.bn').forEach(e=>e.textContent=nm());$('#pt2').textContent=$('#pt').textContent;$('#sbt').textContent=mode==='copied'?'Post copied to clipboard':'Post saved';
+ if(mode==='copied'&&navigator.clipboard){navigator.clipboard.writeText($('#pt').textContent+'\n#BandraBakery #SourdoughMumbai #WeekendSpecial').catch(()=>{})}
+ if(!S.act){S.act=1;log('post_activated','first '+(mode==='copied'?'copy':'save')+', counts as activation',1);$('#am').className='m ok';$('#am b').textContent='Yes'}
+ else log(mode==='copied'?'post_copied':'post_saved','additional action, not double counted');
+ toast(mode==='copied'?'Copied to clipboard':'Saved to your library');go('sv')}
+$('#c1').onclick=()=>{log('setup_completed','name and description submitted',1);go('w2')};
+const chk=()=>$('#c1').disabled=!($('#name').value.trim().length>1&&desc().length>9);
+$('#name').oninput=$('#desc').oninput=chk;
+$('#ex').onclick=()=>{$('#name').value='Bramble & Crumb';$('#desc').value='Sourdough bakery and weekend brunch spot in Bandra, Mumbai.';chk();$('#c1').focus()};
+$('#sk').onclick=()=>{log('brand_step_skipped','optional step');go('w3')};
+$('#c2').onclick=()=>{log('brand_details_added',S.tone||'sample or website only');go('w3')};
+$('#c3').onclick=()=>{const c=$('#cust').value.trim();if(c)S.idea=-1;log('idea_selected',c?'custom idea':IDEAS[S.idea][2]);go('w4')};
+$('#skp').onclick=()=>{clearTimeout(T);go('w5')};
+$('#ed').onclick=()=>{const p=$('#pt');p.focus();getSelection().selectAllChildren(p);getSelection().collapseToEnd()};
+$('#pt').oninput=()=>{S.edited=1};
+$('#rsm').oninput=chg;
+$('#rg').onclick=()=>{S.regen=true;S.regen2=true;S.edited=0;log('post_regenerated',[...S.tones].join(', ')||'sample');go('w4')};
+$('#tn').onclick=e=>{const o=e.target.getAttribute('aria-pressed')!=='true';e.target.setAttribute('aria-pressed',o);$('#app').classList.toggle('ann',o)};
+$('#te').onclick=e=>{const o=e.target.getAttribute('aria-pressed')!=='true';e.target.setAttribute('aria-pressed',o);$('#app').classList.toggle('noev',!o)};
+$('#rs').onclick=()=>location.reload();
+$$('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
+$$('[data-fin]').forEach(b=>b.onclick=()=>fin(b.dataset.fin));
+chips($('#tc'),TONES,t=>S.tone===t,0,t=>{S.tone=S.tone===t?null:t;log('brand_tone_set',S.tone||'cleared')});
+chips($('#rc'),RC,t=>S.tones.has(t),1,t=>{S.tones.has(t)?S.tones.delete(t):S.tones.add(t);log('brand_tone_changed',t);chg()});
+$('#ideas').innerHTML=IDEAS.map((x,i)=>'<button class="idea" aria-pressed="'+(i===0)+'" data-i="'+i+'"><i></i><div><b>'+x[0]+'</b><span>'+x[1]+'</span></div></button>').join('');
+$$('.idea').forEach(b=>b.onclick=()=>{S.idea=+b.dataset.i;$('#cust').value='';$$('.idea').forEach(x=>x.setAttribute('aria-pressed',x===b))});
+chips($('#so'),['Yes, as it is','Needs minor edits','No, start over'],t=>S.ans===t,0,t=>{S.ans=t;$('#thx').style.display='block';log('usefulness_response',t)});
+go('w1');
 </script>
-
 </body>
 </html>
